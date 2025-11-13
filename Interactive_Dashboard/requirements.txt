@@ -1,0 +1,14 @@
+# Interactive GA Dashboard Requirements
+
+# Core dependencies
+dash>=2.14.0
+plotly>=5.17.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Optional (for advanced features)
+scipy>=1.11.0  # Statistical analysis
+scikit-learn>=1.3.0  # ML integration
+
+# Development
+jupyter>=1.0.0  # For notebook integration
