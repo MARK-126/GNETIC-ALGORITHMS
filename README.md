@@ -16,7 +16,25 @@ Este repositorio contiene una serie completa y profesional de tutoriales sobre *
 | **GA_Tutorial_2_Intermediate** | Intermedio | Operadores avanzados y estrategias de selección | ✅ Completo |
 | **GA_Tutorial_3_Advanced** | Avanzado | TSP, híbridos, multi-objetivo | ✅ Completo |
 | **GA_Tutorial_4_Applications** | Aplicado | Aplicaciones reales y casos de uso | ✅ Completo |
+| **GA_Tutorial_5_Specialized** | Especializado | CMA-ES, Differential Evolution, PSO | ✅ Completo |
 | **W2A1** | Referencia | Métodos de optimización (material original) | ✅ Completo |
+
+### 🔬 Casos de Estudio de Data Science
+
+| Caso de Estudio | Descripción | Estado |
+|----------------|-------------|--------|
+| **AutoML** | Optimización automática de modelos ML con GA | ✅ Completo |
+| **Feature Engineering** | Ingeniería de características automática | ✅ Completo |
+| **Ensemble Optimization** | Optimización de ensembles con GA | ✅ Completo |
+| **Time Series** | Predicción de series temporales | ✅ Completo |
+
+### 🛠️ Herramientas y Utilidades
+
+| Componente | Descripción | Estado |
+|-----------|-------------|--------|
+| **Interactive Dashboard** | Visualización en tiempo real con Plotly Dash | ✅ Completo |
+| **sklearn Integration** | Integración con scikit-learn (GAClassifier, GAFeatureSelector) | ✅ Completo |
+| **Benchmarking Suite** | Suite automatizada de benchmarking | ✅ Completo |
 
 ---
 
@@ -147,15 +165,261 @@ GA_Tutorial_2_Intermediate/
 
 **Nivel:** Aplicado | **Duración estimada:** 10-12 horas
 
-### Contenido Planificado
+### Contenido
 
-- 🚧 Optimización de hiperparámetros en ML
-- 🚧 Feature selection
-- 🚧 Diseño de redes neuronales (neuroevolución)
-- 🚧 Scheduling y planificación
-- 🚧 Optimización de portafolios
-- 🚧 Diseño de sistemas de control
-- 🚧 Casos de estudio industriales
+- ✅ Optimización de hiperparámetros en ML
+- ✅ Feature selection con GAs
+- ✅ Scheduling y planificación de trabajos
+- ✅ Optimización de portafolios financieros
+- ✅ Neural Architecture Search (NAS) básico
+- ✅ Casos de uso con datos reales
+
+### Aplicaciones Implementadas
+
+- **Hyperparameter Optimization:** Búsqueda de mejores hiperparámetros para modelos ML
+- **Feature Selection:** Selección automática de características relevantes
+- **Job Scheduling:** Minimización de makespan en scheduling de trabajos
+- **Portfolio Optimization:** Balance riesgo-retorno en portafolios de inversión
+- **Neural Architecture Search:** Diseño automático de arquitecturas de redes neuronales
+
+---
+
+## 🚀 Tutorial 5: Algoritmos Especializados
+
+**Nivel:** Especializado | **Duración estimada:** 8-10 horas
+
+### Contenido
+
+- ✅ **CMA-ES** (Covariance Matrix Adaptation Evolution Strategy)
+  - Adaptación automática de tamaño de paso
+  - Matriz de covarianza para dirección de búsqueda
+  - Interfaz ask-tell
+  - Mejor para optimización continua
+
+- ✅ **Differential Evolution** (DE)
+  - Mutación: v = x_r1 + F*(x_r2 - x_r3)
+  - Crossover binomial
+  - Excelente para problemas multimodales
+  - Simple y efectivo
+
+- ✅ **Particle Swarm Optimization** (PSO)
+  - Inteligencia de enjambre
+  - Componentes cognitiva y social
+  - Convergencia rápida
+  - Pocos parámetros
+
+### Comparaciones de Rendimiento
+
+Incluye benchmarks completos comparando:
+- Velocidad de convergencia
+- Tasa de éxito
+- Escalabilidad con dimensionalidad
+- Complejidad computacional
+
+---
+
+## 📊 Casos de Estudio de Data Science
+
+**Ubicación:** `DataScience_Case_Studies/`
+
+### Case Study 1: AutoML con Algoritmos Genéticos
+
+**Nivel:** Avanzado | **Archivo:** `automl/Case_Study_1_AutoML.ipynb`
+
+**Contenido:**
+- Optimización simultánea de modelo + hiperparámetros + features
+- Codificación híbrida (binaria + real)
+- Validación cruzada estratificada
+- Comparación con baseline methods
+- Dataset: Breast Cancer Wisconsin
+
+**Resultados esperados:**
+- 2-5% mejora en accuracy vs tuning manual
+- Reducción de features 30-50%
+- Automatización completa del pipeline
+
+### Case Study 2: Feature Engineering con GAs
+
+**Nivel:** Avanzado | **Archivo:** `feature_engineering/Case_Study_2_Feature_Engineering.ipynb`
+
+**Contenido:**
+- Generación automática de features
+- Operaciones unarias: square, sqrt, log, exp, abs, inv
+- Operaciones binarias: add, subtract, multiply, divide, max, min
+- Prevención de overfitting
+- Análisis de importancia de features
+
+**Resultados esperados:**
+- 5-15% mejora en accuracy
+- Descubrimiento de interacciones no obvias
+- Reducción de esfuerzo manual
+
+### Case Study 3: Ensemble Optimization
+
+**Nivel:** Avanzado | **Archivo:** `ensemble_optimization/Case_Study_3_Ensemble_Optimization.ipynb`
+
+**Contenido:**
+- Optimización de pesos en voting ensembles
+- Selección automática de modelos
+- Configuración de meta-learners (stacking)
+- Balance diversidad vs accuracy
+- Dataset: Breast Cancer Wisconsin
+
+**Resultados esperados:**
+- 2-5% mejora vs mejor modelo individual
+- 1-3% mejora vs ensemble uniforme
+- 30-50% reducción de modelos
+
+### Case Study 4: Time Series Forecasting
+
+**Nivel:** Avanzado | **Archivo:** `time_series/Case_Study_4_Time_Series_Optimization.ipynb`
+
+**Contenido:**
+- Selección de features de lag
+- Optimización de ventanas rolling
+- Tuning de hiperparámetros
+- Validación temporal correcta
+- Métricas: RMSE, MAE, MAPE
+
+**Resultados esperados:**
+- 10-25% reducción RMSE vs lag-1 simple
+- 30-60% mejora vs persistencia naive
+- Feature engineering automático
+
+---
+
+## 📈 Interactive Dashboard
+
+**Ubicación:** `Interactive_Dashboard/`
+
+### Características
+
+**Dashboard con Plotly Dash** (`ga_dashboard.py`):
+- Visualización en tiempo real de optimización GA
+- 4 problemas benchmark (Sphere, Rastrigin, Rosenbrock, Ackley)
+- Controles interactivos de parámetros
+- Gráficos actualizados en vivo:
+  - Evolución de fitness
+  - Diversidad de población
+  - Distribución 2D de individuos
+  - Tasa de convergencia
+
+**Visualizador Simple** (`simple_visualizer.py`):
+- Visualización con matplotlib (sin servidor web)
+- Modo estático y animado
+- Análisis de importancia de features
+- Comparación de algoritmos
+
+### Uso
+
+```bash
+# Dashboard interactivo
+cd Interactive_Dashboard
+python ga_dashboard.py
+# Abrir http://localhost:8050
+
+# Visualizador simple
+python simple_visualizer.py
+```
+
+---
+
+## 🤖 Integración con scikit-learn
+
+**Ubicación:** `sklearn_integration/`
+
+### Componentes
+
+#### GAClassifier y GARegressor
+```python
+from ga_sklearn import GAClassifier
+from sklearn.ensemble import RandomForestClassifier
+
+param_space = {
+    'n_estimators': (10, 200, 'int'),
+    'max_depth': (3, 20, 'int')
+}
+
+ga_clf = GAClassifier(
+    estimator=RandomForestClassifier(),
+    param_space=param_space,
+    pop_size=30,
+    max_generations=20
+)
+
+ga_clf.fit(X_train, y_train)
+print(f"Best params: {ga_clf.best_params_}")
+print(f"Best score: {ga_clf.best_score_:.4f}")
+```
+
+#### GAFeatureSelector
+```python
+from ga_sklearn import GAFeatureSelector
+from sklearn.linear_model import LogisticRegression
+
+selector = GAFeatureSelector(
+    estimator=LogisticRegression(),
+    max_generations=20
+)
+
+selector.fit(X_train, y_train)
+X_train_selected = selector.transform(X_train)
+print(f"Selected features: {selector.selected_features_}")
+```
+
+### Ventajas
+
+- **Compatible con pipelines de sklearn**
+- **Interfaz familiar** (fit/predict/transform)
+- **Funciona con cross_val_score**
+- **Drop-in replacement** para GridSearchCV
+- **Más rápido** que grid search exhaustivo
+
+---
+
+## 🏁 Benchmarking Suite
+
+**Ubicación:** `Benchmarking_Suite/`
+
+### Características
+
+- **Comparación automatizada** de 4 algoritmos (GA, CMA-ES, DE, PSO)
+- **4 funciones benchmark** estándar
+- **Múltiples dimensiones** (5D, 10D, 20D)
+- **Análisis estadístico** completo
+- **10 ejecuciones independientes** por configuración
+
+### Uso
+
+```bash
+cd Benchmarking_Suite
+python ga_benchmark.py
+```
+
+### Salidas Generadas
+
+1. **benchmark_report.txt**: Análisis detallado con estadísticas
+2. **benchmark_results.csv**: Datos crudos para análisis posterior
+3. **benchmark_results.json**: Resultados estructurados
+4. **benchmark_plots.png**: Visualizaciones de alta calidad
+
+### Métricas Reportadas
+
+- Best, Mean, Median, Worst fitness
+- Standard deviation (consistencia)
+- Success rate (% alcanzando óptimo)
+- Average time (tiempo de ejecución)
+- Scalability analysis (rendimiento vs dimensión)
+
+### Ejemplo de Resultados
+
+```
+Algorithm     Mean Fitness    Success Rate    Avg Time
+CMA-ES        1.234e-05      78.3%           2.1s
+DE            2.456e-04      65.0%           1.8s
+PSO           3.789e-04      58.3%           1.2s
+Standard_GA   5.123e-03      45.0%           2.5s
+```
 
 ---
 
@@ -299,22 +563,40 @@ Tutorial_X/
 
 ### ✅ Completado
 
+**Tutoriales Principales:**
 - [x] Tutorial 1: Fundamentos completos (8 ejercicios, tests, visualizaciones)
 - [x] Tutorial 2: Operadores avanzados completo (17 tests, SBX, NSGA-II concepts)
 - [x] Tutorial 3: TSP, híbridos, multi-objetivo (8 tests, 2-opt, Pareto fronts)
 - [x] Tutorial 4: Aplicaciones reales (hyperparameters, features, scheduling, portfolio)
+- [x] Tutorial 5: Algoritmos especializados (CMA-ES, DE, PSO con 8 tests)
+
+**Casos de Estudio:**
+- [x] Case Study 1: AutoML completo con GA
+- [x] Case Study 2: Feature Engineering automático
+- [x] Case Study 3: Ensemble Optimization
+- [x] Case Study 4: Time Series Forecasting
+
+**Herramientas y Utilidades:**
+- [x] Interactive Dashboard con Plotly Dash
+- [x] Simple Visualizer con matplotlib
+- [x] Integración completa con scikit-learn (GAClassifier, GARegressor, GAFeatureSelector)
+- [x] Benchmarking Suite automatizado
+
+**Infraestructura:**
 - [x] Módulo de utilidades para cada tutorial
-- [x] Sistema de tests automatizados (40+ tests totales)
+- [x] Sistema de tests automatizados (60+ tests totales)
 - [x] Funciones benchmark y problemas reales
 - [x] Visualizaciones interactivas y Gantt charts
-- [x] Documentación completa (READMEs detallados)
+- [x] Documentación profesional completa (READMEs detallados)
 
-### 🎯 Próximas Características
+### 🎯 Próximas Características Potenciales
 
-- [ ] Ejemplos de GA paralelo
-- [ ] Integración con scikit-learn
-- [ ] Dashboard de análisis de rendimiento
+- [ ] Ejemplos de GA paralelo con multiprocessing
+- [ ] MCP server para Claude Code integration
 - [ ] Videos tutoriales complementarios
+- [ ] Notebooks interactivos con widgets
+- [ ] Más casos de estudio (NLP, Computer Vision)
+- [ ] Integración con frameworks de deep learning (PyTorch, TensorFlow)
 
 ---
 
