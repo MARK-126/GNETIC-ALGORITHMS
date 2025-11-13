@@ -14,8 +14,8 @@ Este repositorio contiene una serie completa y profesional de tutoriales sobre *
 |----------|-------|-------------|--------|
 | **GA_Tutorial_1_Basics** | Básico | Introducción y fundamentos de GAs | ✅ Completo |
 | **GA_Tutorial_2_Intermediate** | Intermedio | Operadores avanzados y estrategias de selección | ✅ Completo |
-| **GA_Tutorial_3_Advanced** | Avanzado | Optimización avanzada y TSP | 🚧 En desarrollo |
-| **GA_Tutorial_4_Applications** | Aplicado | Aplicaciones reales y casos de uso | 🚧 En desarrollo |
+| **GA_Tutorial_3_Advanced** | Avanzado | TSP, híbridos, multi-objetivo | ✅ Completo |
+| **GA_Tutorial_4_Applications** | Aplicado | Aplicaciones reales y casos de uso | ✅ Completo |
 | **W2A1** | Referencia | Métodos de optimización (material original) | ✅ Completo |
 
 ---
@@ -299,18 +299,15 @@ Tutorial_X/
 
 ### ✅ Completado
 
-- [x] Tutorial 1: Fundamentos completos
-- [x] Módulo de utilidades básicas
-- [x] Sistema de tests automatizados
-- [x] Funciones benchmark (Sphere, Rastrigin, Rosenbrock)
-- [x] Visualizaciones interactivas
-- [x] Tutorial 2: Operadores avanzados (utilidades)
-
-### 🚧 En Desarrollo
-
-- [ ] Tutorial 2: Notebook completo
-- [ ] Tutorial 3: Optimización avanzada
-- [ ] Tutorial 4: Aplicaciones reales
+- [x] Tutorial 1: Fundamentos completos (8 ejercicios, tests, visualizaciones)
+- [x] Tutorial 2: Operadores avanzados completo (17 tests, SBX, NSGA-II concepts)
+- [x] Tutorial 3: TSP, híbridos, multi-objetivo (8 tests, 2-opt, Pareto fronts)
+- [x] Tutorial 4: Aplicaciones reales (hyperparameters, features, scheduling, portfolio)
+- [x] Módulo de utilidades para cada tutorial
+- [x] Sistema de tests automatizados (40+ tests totales)
+- [x] Funciones benchmark y problemas reales
+- [x] Visualizaciones interactivas y Gantt charts
+- [x] Documentación completa (READMEs detallados)
 
 ### 🎯 Próximas Características
 
