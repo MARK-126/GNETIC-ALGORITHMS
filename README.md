@@ -28,6 +28,12 @@ Este repositorio contiene una serie completa y profesional de tutoriales sobre *
 | **Ensemble Optimization** | Optimización de ensembles con GA | ✅ Completo |
 | **Time Series** | Predicción de series temporales | ✅ Completo |
 
+### 💼 Caso de Estudio Industrial
+
+| Caso de Estudio | Descripción | Estado |
+|----------------|-------------|--------|
+| **Tutorial_5_Industrial_Case_Study** | **NUEVO:** Vehicle Routing Problem (VRPTW) - Optimización de rutas de delivery | ✅ Completo |
+
 ### 🛠️ Herramientas y Utilidades
 
 | Componente | Descripción | Estado |
