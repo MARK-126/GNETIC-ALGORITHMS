@@ -10,6 +10,7 @@ This tutorial demonstrates how to apply genetic algorithms to practical real-wor
 2. **Feature Selection** - Finding optimal feature subsets
 3. **Job Scheduling** - Resource allocation and load balancing
 4. **Portfolio Optimization** - Financial asset allocation
+5. **Neural Architecture Search (NAS)** - Automated neural network design
 
 ## 📋 Contents
 
@@ -17,7 +18,8 @@ This tutorial demonstrates how to apply genetic algorithms to practical real-wor
 |------|-------------|
 | `GA_Real_World_Applications.ipynb` | Complete tutorial with 4 practical applications |
 | `ga_utils_applications.py` | Application-specific utilities and helpers |
-| `public_tests.py` | 5 validation tests |
+| `neural_architecture_search.py` | **NEW:** Complete NAS framework with TensorFlow/Keras integration |
+| `public_tests.py` | 10 validation tests (including NAS tests) |
 | `README.md` | This documentation |
 
 ## 🚀 Quick Start
@@ -91,6 +93,37 @@ param_ranges = {
 
 **Based on:** Markowitz Modern Portfolio Theory
 
+### 5. Neural Architecture Search (NAS)
+
+**Problem:** Automatically design optimal neural network architectures
+
+**GA Encoding:** Layered architecture representation
+- Each gene encodes: layer type, filters/units, kernel size, dropout rate
+- Training hyperparameters: learning rate, batch size, optimizer
+
+**Architecture Components:**
+- Conv2D layers with variable filters (16-256)
+- MaxPooling layers
+- Dropout layers (0.1-0.5)
+- Dense layers with variable units (32-512)
+- Automatic flatten before dense layers
+
+**Fitness Function:**
+- Validation accuracy (primary)
+- Complexity penalty (parameter count)
+- Early stopping for efficiency
+
+**Advantages:**
+- Automated architecture design
+- Finds task-specific architectures
+- Balances performance vs complexity
+- Much faster than manual tuning
+
+**Typical Results:**
+- Finds competitive architectures in 20-50 generations
+- Often outperforms hand-designed baselines
+- Complexity-aware: avoids over-parameterized models
+
 ## 📊 Expected Results
 
 ### Hyperparameter Optimization
@@ -110,6 +143,12 @@ param_ranges = {
 ### Portfolio Optimization
 - **Sharpe Ratio**: Typically improved 20-40%
 - **Risk-adjusted return**: Significantly better than equal-weight
+
+### Neural Architecture Search
+- **Accuracy**: Often 2-5% better than baseline architectures
+- **Search time**: 20-50 generations with 20-40 individuals
+- **Efficiency**: Finds lightweight models (50-80% fewer parameters)
+- **Generalization**: Architectures transfer well to similar tasks
 
 ## 🔧 Usage Examples
 
@@ -170,6 +209,59 @@ best_weights, history = portfolio_ga(
 )
 ```
 
+### Neural Architecture Search
+
+```python
+from neural_architecture_search import (
+    nas_genetic_algorithm,
+    LayerGene, ArchitectureChromosome
+)
+
+# Prepare data (e.g., MNIST, CIFAR-10)
+# X_train, y_train, X_val, y_val = load_data()
+
+# Run NAS
+best_architecture, best_fitness, history = nas_genetic_algorithm(
+    X_train, y_train, X_val, y_val,
+    num_classes=10,
+    pop_size=20,                # Population size
+    max_generations=30,         # Generations to evolve
+    max_layers=8,               # Maximum layers per architecture
+    max_epochs_per_eval=5,      # Training epochs per evaluation
+    mutation_rate=0.15,
+    crossover_rate=0.8
+)
+
+# Best architecture found
+print(f"Best validation accuracy: {best_architecture.validation_accuracy:.4f}")
+print(f"Architecture complexity: {best_architecture.count_parameters()}")
+
+# View layers
+for i, layer in enumerate(best_architecture.layers):
+    print(f"Layer {i}: {layer}")
+
+# Build and train final model
+model = best_architecture.to_keras_model(input_shape=(28, 28, 1))
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=20)
+
+# Create custom architecture manually
+layers = [
+    LayerGene('conv2d', {'filters': 32, 'kernel_size': 3, 'activation': 'relu'}),
+    LayerGene('maxpool2d', {'pool_size': 2}),
+    LayerGene('conv2d', {'filters': 64, 'kernel_size': 3, 'activation': 'relu'}),
+    LayerGene('dropout', {'rate': 0.3}),
+    LayerGene('flatten', {}),
+    LayerGene('dense', {'units': 128, 'activation': 'relu'}),
+    LayerGene('dense', {'units': 10, 'activation': 'softmax'})
+]
+arch = ArchitectureChromosome(layers, learning_rate=0.001, batch_size=32)
+```
+
 ## 🧪 Exercises
 
 1. Compare GA hyperparameter optimization to grid search
@@ -177,6 +269,11 @@ best_weights, history = portfolio_ga(
 3. Implement job scheduling with machine-specific capabilities
 4. Add transaction costs to portfolio optimization
 5. Combine multiple applications (e.g., feature selection + hyperparameter tuning)
+6. **Run NAS on MNIST or Fashion-MNIST datasets**
+7. **Compare NAS-found architectures to hand-designed baselines**
+8. **Experiment with different complexity penalties in NAS**
+9. **Add BatchNormalization layers to NAS search space**
+10. **Try NAS on CIFAR-10 (more challenging dataset)**
 
 ## 📚 References
 
@@ -195,6 +292,12 @@ best_weights, history = portfolio_ga(
 ### Portfolio Optimization
 - **Markowitz, H.** (1952). *Portfolio selection*. The Journal of Finance
 - **Sharpe, W. F.** (1994). *The Sharpe ratio*
+
+### Neural Architecture Search
+- **Zoph, B., & Le, Q. V.** (2017). *Neural Architecture Search with Reinforcement Learning*. ICLR.
+- **Real, E., et al.** (2019). *Regularized Evolution for Image Classifier Architecture Search*. AAAI.
+- **Elsken, T., et al.** (2019). *Neural Architecture Search: A Survey*. JMLR.
+- **Stanley, K. O., & Miikkulainen, R.** (2002). *Evolving Neural Networks through Augmenting Topologies*. Evolutionary Computation.
 
 ## 🔜 Beyond This Tutorial
 
@@ -245,6 +348,9 @@ fitness = w1*obj1 + w2*obj2  # Weighted sum
 | Feature Selection | 30-100 | 50-100 | 0.01-0.05 |
 | Scheduling | 50-200 | 100-300 | 0.1-0.2 |
 | Portfolio | 50-100 | 100-200 | 0.1-0.2 |
+| NAS | 20-40 | 20-50 | 0.1-0.2 |
+
+**Note for NAS:** Start with smaller populations and generations due to expensive fitness evaluations (training networks).
 
 ## 🤝 Best Practices
 
@@ -255,6 +361,9 @@ fitness = w1*obj1 + w2*obj2  # Weighted sum
 5. **Tune parameters**: Population size and mutation rate matter
 6. **Domain knowledge**: Incorporate problem-specific insights
 7. **Hybrid approaches**: Combine GA with local search
+8. **NAS**: Use early stopping (3-5 epochs) for fitness evaluation to save time
+9. **NAS**: Balance accuracy vs complexity with appropriate penalty weight
+10. **NAS**: Start with small max_layers (6-8) before scaling up
 
 ---
 

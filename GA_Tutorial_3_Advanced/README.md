@@ -19,8 +19,9 @@ This tutorial covers advanced GA applications including combinatorial optimizati
 | File | Description |
 |------|-------------|
 | `GA_Advanced_Topics.ipynb` | Main tutorial with TSP, hybrid GAs, multi-objective basics |
-| `ga_utils_advanced.py` | TSP operators, 2-opt search, multi-objective utilities |
-| `public_tests.py` | 8 automated tests |
+| `ga_utils_advanced.py` | TSP operators, 2-opt search, NSGA-II complete implementation, ZDT problems |
+| `parallel_ga.py` | **NEW:** Parallel GA with island model and multiprocessing |
+| `public_tests.py` | 17 automated tests (TSP, NSGA-II, Parallel GA) |
 | `README.md` | This documentation |
 
 ### Topics Covered
@@ -42,7 +43,17 @@ This tutorial covers advanced GA applications including combinatorial optimizati
    - Pareto dominance
    - Non-dominated sorting
    - Crowding distance
-   - NSGA-II foundations
+   - **NSGA-II complete implementation**
+   - **ZDT benchmark problems (ZDT1-6)**
+   - Simulated Binary Crossover (SBX)
+   - Polynomial mutation
+
+4. **Parallel Genetic Algorithms**
+   - Island model architecture
+   - Multiprocessing implementation
+   - Migration strategies (ring, fully-connected)
+   - Speedup benchmarking
+   - Multi-core parallelization
 
 ## 🚀 Quick Start
 
@@ -113,20 +124,78 @@ best_tour, best_distance, history = hybrid_tsp_ga(
 )
 ```
 
-### Multi-Objective Sorting
+### Multi-Objective Optimization (NSGA-II)
 
 ```python
-# Evaluate multiple objectives
-objectives = np.array([[f1_val, f2_val], ...])  # Shape: (n_solutions, 2)
+# Define objective functions
+def f1(x):
+    return x[0]**2
 
-# Non-dominated sorting
-fronts = fast_non_dominated_sort(population, objectives)
+def f2(x):
+    return (x[0] - 2)**2
 
-# Crowding distance
-distances = calculate_crowding_distance_multi(objectives)
+objective_functions = [f1, f2]
+bounds = [(0, 2)]
 
-# Visualize
-plot_pareto_front_2d(objectives)
+# Run NSGA-II
+population, objectives, pareto_front, history = nsga2(
+    objective_functions,
+    n_objectives=2,
+    bounds=bounds,
+    pop_size=100,
+    max_generations=100
+)
+
+# Use ZDT benchmark problems
+objectives, bounds, n_vars = get_zdt_problem('ZDT1')
+population, objectives, pareto_front, history = nsga2(
+    objectives,
+    n_objectives=2,
+    bounds=bounds,
+    pop_size=100,
+    max_generations=200
+)
+
+# Visualize Pareto front
+plot_pareto_front_2d(objectives[pareto_front])
+```
+
+### Parallel GA (Multi-core Speedup)
+
+```python
+from parallel_ga import ParallelGA, parallel_ga_simple
+
+# Define fitness function
+def rastrigin(x):
+    n = len(x)
+    return -(10 * n + np.sum(x**2 - 10 * np.cos(2 * np.pi * x)))
+
+bounds = [(-5.12, 5.12)] * 10
+
+# Method 1: ParallelGA class
+pga = ParallelGA(
+    rastrigin,
+    bounds,
+    n_islands=4,           # 4 parallel populations
+    pop_size_per_island=50,
+    migration_interval=10,  # Migrate every 10 generations
+    topology='ring'         # or 'fully_connected'
+)
+
+best_sol, best_fit, history = pga.optimize(max_generations=100)
+
+# Method 2: Simple interface (auto-detects cores)
+best_sol, best_fit, history = parallel_ga_simple(
+    rastrigin,
+    bounds,
+    pop_size=200,
+    max_generations=100
+)
+
+# Benchmark parallel vs sequential
+from parallel_ga import benchmark_parallel_vs_sequential
+results = benchmark_parallel_vs_sequential(rastrigin, bounds)
+print(f"Speedup: {results['speedup']:.2f}x")
 ```
 
 ## 📊 Expected Results
@@ -146,6 +215,16 @@ plot_pareto_front_2d(objectives)
 - **Faster convergence**: Reaches good solutions 40% faster
 - **Trade-off**: More computation per generation
 
+### Parallel GA Performance
+
+| Cores | Theoretical Speedup | Typical Speedup | Efficiency |
+|-------|-------------------|-----------------|------------|
+| 2 | 2.0x | 1.7-1.9x | 85-95% |
+| 4 | 4.0x | 3.2-3.6x | 80-90% |
+| 8 | 8.0x | 5.6-6.8x | 70-85% |
+
+**Note:** Actual speedup depends on problem evaluation cost. Best for expensive fitness functions.
+
 ## 🧪 Exercises
 
 1. Solve TSP with 30+ cities
@@ -153,7 +232,11 @@ plot_pareto_front_2d(objectives)
 3. Experiment with 2-opt iteration limits
 4. Implement 3-opt local search
 5. Test on asymmetric TSP
-6. Explore multi-objective test problems
+6. **Run NSGA-II on ZDT1-ZDT6 benchmark problems**
+7. **Compare NSGA-II convergence on different ZDT problems**
+8. **Benchmark parallel GA speedup on your machine**
+9. **Compare ring vs fully-connected migration topologies**
+10. **Test parallel GA with different island counts**
 
 ## 📚 References
 
@@ -204,7 +287,7 @@ mutated = scramble_mutation(tour, mutation_rate=0.1)
 improved_tour = two_opt_local_search(tour, distance_matrix, max_iterations=100)
 ```
 
-### Multi-Objective
+### Multi-Objective (NSGA-II)
 ```python
 # Check dominance
 is_dominated = dominates(obj1, obj2)
@@ -214,6 +297,29 @@ fronts = fast_non_dominated_sort(population, objectives)
 
 # Calculate diversity
 distances = calculate_crowding_distance_multi(objectives)
+
+# Run complete NSGA-II
+population, objectives, pareto_front, history = nsga2(
+    objective_functions, n_objectives=2, bounds=bounds,
+    pop_size=100, max_generations=100
+)
+
+# Use ZDT problems
+objectives, bounds, n_vars = get_zdt_problem('ZDT1')
+```
+
+### Parallel GA
+```python
+from parallel_ga import ParallelGA, parallel_ga_simple
+
+# ParallelGA class
+pga = ParallelGA(objective_func, bounds, n_islands=4)
+best_sol, best_fit, history = pga.optimize(max_generations=100)
+
+# Simple interface (auto-detects cores)
+best_sol, best_fit, history = parallel_ga_simple(
+    objective_func, bounds, pop_size=200, max_generations=100
+)
 ```
 
 ## 🤝 Tips for Success
@@ -223,6 +329,11 @@ distances = calculate_crowding_distance_multi(objectives)
 3. **Hybrid frequency**: 10-30% local search is usually optimal
 4. **Multi-objective**: Maintain diversity on Pareto front
 5. **Visualization**: Plot tours and fronts to understand behavior
+6. **NSGA-II**: Use larger populations (100+) for better Pareto front coverage
+7. **ZDT problems**: Start with ZDT1/ZDT2 (easier) before ZDT4/ZDT6 (harder)
+8. **Parallel GA**: Best speedup with expensive fitness functions
+9. **Migration**: Balance frequency (every 10-20 generations) vs amount (1-5 individuals)
+10. **Island count**: Match your CPU cores for optimal performance
 
 ---
 

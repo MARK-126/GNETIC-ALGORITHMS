@@ -5,6 +5,7 @@ Tests for TSP, hybrid algorithms, and multi-objective optimization.
 
 import numpy as np
 from ga_utils_advanced import *
+from parallel_ga import ParallelGA, run_single_island, parallel_ga_simple
 
 
 def test_tsp_distance_calculation():
@@ -172,6 +173,242 @@ def test_crowding_distance():
     print("✓ Crowding distance test passed!")
 
 
+def test_sbx_crossover():
+    """Test SBX crossover."""
+    print("Testing SBX crossover...")
+
+    parent1 = np.array([0.2, 0.5, 0.7])
+    parent2 = np.array([0.8, 0.3, 0.9])
+    bounds = np.array([[0, 1], [0, 1], [0, 1]])
+
+    np.random.seed(42)
+    child1, child2 = sbx_crossover(parent1, parent2, eta=20, bounds=bounds)
+
+    # Check bounds
+    assert np.all(child1 >= 0) and np.all(child1 <= 1), "Child1 out of bounds"
+    assert np.all(child2 >= 0) and np.all(child2 <= 1), "Child2 out of bounds"
+
+    # Check shape
+    assert child1.shape == parent1.shape, "Child1 shape mismatch"
+    assert child2.shape == parent2.shape, "Child2 shape mismatch"
+
+    print("✓ SBX crossover test passed!")
+
+
+def test_polynomial_mutation():
+    """Test polynomial mutation."""
+    print("Testing polynomial mutation...")
+
+    individual = np.array([0.5, 0.5, 0.5])
+    bounds = np.array([[0, 1], [0, 1], [0, 1]])
+
+    np.random.seed(42)
+    mutated = polynomial_mutation(individual, mutation_rate=1.0, eta=20, bounds=bounds)
+
+    # Check bounds
+    assert np.all(mutated >= 0) and np.all(mutated <= 1), "Mutated out of bounds"
+
+    # Check shape
+    assert mutated.shape == individual.shape, "Mutated shape mismatch"
+
+    print("✓ Polynomial mutation test passed!")
+
+
+def test_zdt1_problem():
+    """Test ZDT1 problem."""
+    print("Testing ZDT1 problem...")
+
+    # Test at known point
+    x = np.zeros(30)
+    x[0] = 0.5
+    f1, f2 = zdt1(x)
+
+    # f1 should equal x[0]
+    assert abs(f1 - 0.5) < 1e-6, f"f1 incorrect: {f1}"
+
+    # f2 should be > 0
+    assert f2 > 0, f"f2 should be positive: {f2}"
+
+    # Test Pareto optimal point
+    x_optimal = np.zeros(30)
+    x_optimal[0] = 0.5
+    # Rest should be 0 for Pareto optimal
+    f1_opt, f2_opt = zdt1(x_optimal)
+
+    # For Pareto optimal, g = 1, so f2 = 1 - sqrt(f1)
+    expected_f2 = 1.0 - np.sqrt(f1_opt)
+    assert abs(f2_opt - expected_f2) < 1e-6, "ZDT1 Pareto optimal check failed"
+
+    print("✓ ZDT1 problem test passed!")
+
+
+def test_nsga2_selection():
+    """Test NSGA-II selection."""
+    print("Testing NSGA-II selection...")
+
+    # Create simple population
+    population = np.random.rand(10, 2)
+    objectives = np.random.rand(10, 2)
+
+    # Select 5 individuals
+    selected_pop, selected_obj = nsga2_selection(population, objectives, 5)
+
+    # Check size
+    assert len(selected_pop) == 5, f"Expected 5 selected, got {len(selected_pop)}"
+    assert len(selected_obj) == 5, f"Expected 5 objectives, got {len(selected_obj)}"
+
+    # Check shapes
+    assert selected_pop.shape == (5, 2), "Selected population shape mismatch"
+    assert selected_obj.shape == (5, 2), "Selected objectives shape mismatch"
+
+    print("✓ NSGA-II selection test passed!")
+
+
+def test_nsga2_basic():
+    """Test basic NSGA-II execution."""
+    print("Testing NSGA-II basic execution...")
+
+    # Simple 2-objective problem
+    def f1(x):
+        return x[0]**2
+
+    def f2(x):
+        return (x[0] - 2)**2
+
+    objective_functions = [f1, f2]
+    bounds = [(0, 2)]
+
+    # Run for few generations
+    population, objectives, pareto_front, history = nsga2(
+        objective_functions,
+        n_objectives=2,
+        bounds=bounds,
+        pop_size=20,
+        max_generations=10
+    )
+
+    # Check outputs
+    assert len(population) == 20, "Population size mismatch"
+    assert objectives.shape == (20, 2), "Objectives shape mismatch"
+    assert len(pareto_front) > 0, "No Pareto front found"
+
+    # Check history
+    assert 'n_pareto' in history, "Missing n_pareto in history"
+    assert len(history['n_pareto']) == 10, "History length mismatch"
+
+    print(f"  Found {len(pareto_front)} Pareto optimal solutions")
+    print("✓ NSGA-II basic execution test passed!")
+
+
+def test_parallel_ga_initialization():
+    """Test ParallelGA initialization."""
+    print("Testing ParallelGA initialization...")
+
+    def sphere(x):
+        return -np.sum(x**2)
+
+    bounds = [(-5, 5), (-5, 5)]
+
+    pga = ParallelGA(
+        sphere,
+        bounds,
+        n_islands=2,
+        pop_size_per_island=10
+    )
+
+    assert pga.n_islands == 2, "Number of islands mismatch"
+    assert pga.pop_size_per_island == 10, "Population size mismatch"
+    assert pga.best_solution is None, "Best solution should be None before optimization"
+
+    print("✓ ParallelGA initialization test passed!")
+
+
+def test_single_island_execution():
+    """Test single island GA execution."""
+    print("Testing single island execution...")
+
+    def sphere(x):
+        return -np.sum(x**2)
+
+    bounds = [(-5, 5), (-5, 5)]
+
+    best_sol, best_fit, history = run_single_island(
+        island_id=0,
+        objective_func=sphere,
+        bounds=bounds,
+        pop_size=20,
+        n_generations=5,
+        mutation_rate=0.1,
+        crossover_rate=0.8
+    )
+
+    # Should return valid solution
+    assert best_sol is not None, "Best solution should not be None"
+    assert len(best_sol) == 2, "Solution dimension mismatch"
+    assert best_fit is not None, "Best fitness should not be None"
+
+    # Check history
+    assert 'best_fitness' in history, "History should contain best_fitness"
+    assert len(history['best_fitness']) == 5, "History length should match generations"
+
+    print("✓ Single island execution test passed!")
+
+
+def test_parallel_ga_basic():
+    """Test basic ParallelGA execution."""
+    print("Testing ParallelGA basic execution...")
+
+    def sphere(x):
+        return -np.sum(x**2)
+
+    bounds = [(-2, 2), (-2, 2)]
+
+    pga = ParallelGA(
+        sphere,
+        bounds,
+        n_islands=2,
+        pop_size_per_island=10
+    )
+
+    best_sol, best_fit, history = pga.optimize(max_generations=3)
+
+    # Should have valid results
+    assert best_sol is not None, "Best solution should not be None"
+    assert len(best_sol) == 2, "Solution dimension mismatch"
+    assert best_fit > -10, f"Fitness should be reasonable, got {best_fit}"
+
+    # Check history
+    assert 'island_histories' in history, "History should contain island_histories"
+    assert len(history['island_histories']) == 2, "Should have 2 island histories"
+
+    print(f"  Best fitness: {best_fit:.4f}")
+    print("✓ ParallelGA basic execution test passed!")
+
+
+def test_get_zdt_problem():
+    """Test ZDT problem retrieval."""
+    print("Testing ZDT problem retrieval...")
+
+    # Test ZDT1
+    objectives, bounds, n_vars = get_zdt_problem('ZDT1')
+    assert len(objectives) == 2, "Should have 2 objectives"
+    assert len(bounds) == 30, "ZDT1 should have 30 variables"
+    assert n_vars == 30, "n_vars mismatch"
+
+    # Test ZDT4
+    objectives, bounds, n_vars = get_zdt_problem('ZDT4')
+    assert len(bounds) == 10, "ZDT4 should have 10 variables"
+
+    # Test invalid problem
+    try:
+        get_zdt_problem('ZDT99')
+        assert False, "Should have raised ValueError"
+    except ValueError:
+        pass  # Expected
+
+    print("✓ ZDT problem retrieval test passed!")
+
+
 def run_all_tests():
     """Run all tests."""
     print("\n" + "="*70)
@@ -179,17 +416,33 @@ def run_all_tests():
     print("="*70 + "\n")
 
     try:
+        # TSP tests
         test_tsp_distance_calculation()
         test_order_crossover()
         test_swap_mutation()
         test_inversion_mutation()
         test_two_opt()
+
+        # Multi-objective tests
         test_pareto_dominance()
         test_non_dominated_sort()
         test_crowding_distance()
 
+        # NSGA-II tests
+        test_sbx_crossover()
+        test_polynomial_mutation()
+        test_zdt1_problem()
+        test_nsga2_selection()
+        test_nsga2_basic()
+        test_get_zdt_problem()
+
+        # Parallel GA tests
+        test_parallel_ga_initialization()
+        test_single_island_execution()
+        test_parallel_ga_basic()
+
         print("\n" + "="*70)
-        print("✓ ALL TESTS PASSED!")
+        print("✓ ALL TESTS PASSED! (17 tests)")
         print("="*70 + "\n")
 
     except AssertionError as e:

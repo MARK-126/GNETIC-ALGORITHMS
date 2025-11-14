@@ -5,6 +5,10 @@ Simple validation tests for application utilities.
 
 import numpy as np
 from ga_utils_applications import *
+from neural_architecture_search import (
+    LayerGene, ArchitectureChromosome,
+    encode_architecture_to_chromosome, decode_chromosome_to_architecture
+)
 
 
 def test_portfolio_decoding():
@@ -85,6 +89,133 @@ def test_portfolio_data_generation():
     print("✓ Portfolio data generation test passed!")
 
 
+def test_layer_gene_creation():
+    """Test LayerGene creation and serialization."""
+    print("Testing LayerGene creation...")
+
+    # Create conv2d layer
+    conv_layer = LayerGene('conv2d', {'filters': 32, 'kernel_size': 3, 'activation': 'relu'})
+    assert conv_layer.layer_type == 'conv2d', "Layer type mismatch"
+    assert conv_layer.params['filters'] == 32, "Filters mismatch"
+
+    # Serialize and deserialize
+    layer_dict = conv_layer.to_dict()
+    restored_layer = LayerGene.from_dict(layer_dict)
+    assert restored_layer.layer_type == conv_layer.layer_type, "Deserialization failed"
+    assert restored_layer.params == conv_layer.params, "Params deserialization failed"
+
+    print("✓ LayerGene creation test passed!")
+
+
+def test_architecture_chromosome():
+    """Test ArchitectureChromosome creation."""
+    print("Testing ArchitectureChromosome...")
+
+    layers = [
+        LayerGene('conv2d', {'filters': 32, 'kernel_size': 3, 'activation': 'relu'}),
+        LayerGene('maxpool2d', {'pool_size': 2}),
+        LayerGene('flatten', {}),
+        LayerGene('dense', {'units': 10, 'activation': 'softmax'})
+    ]
+
+    arch = ArchitectureChromosome(layers, learning_rate=0.001, batch_size=32)
+
+    assert len(arch.layers) == 4, f"Expected 4 layers, got {len(arch.layers)}"
+    assert arch.learning_rate == 0.001, "Learning rate mismatch"
+    assert arch.batch_size == 32, "Batch size mismatch"
+
+    # Test serialization
+    arch_dict = arch.to_dict()
+    restored_arch = ArchitectureChromosome.from_dict(arch_dict)
+    assert len(restored_arch.layers) == len(arch.layers), "Deserialization layer count mismatch"
+
+    print("✓ ArchitectureChromosome test passed!")
+
+
+def test_architecture_encoding_decoding():
+    """Test architecture encoding and decoding."""
+    print("Testing architecture encoding/decoding...")
+
+    # Create simple architecture
+    layers = [
+        LayerGene('conv2d', {'filters': 32, 'kernel_size': 3, 'activation': 'relu'}),
+        LayerGene('maxpool2d', {'pool_size': 2}),
+        LayerGene('dropout', {'rate': 0.3}),
+        LayerGene('flatten', {}),
+        LayerGene('dense', {'units': 64, 'activation': 'relu'}),
+        LayerGene('dense', {'units': 10, 'activation': 'softmax'})
+    ]
+
+    arch = ArchitectureChromosome(layers, learning_rate=0.001, batch_size=32)
+
+    # Encode to chromosome
+    chromosome = encode_architecture_to_chromosome(arch, max_layers=10)
+
+    # Should be a numpy array
+    assert isinstance(chromosome, np.ndarray), "Chromosome should be numpy array"
+    assert len(chromosome) == 10 * 7 + 3, f"Expected length {10*7+3}, got {len(chromosome)}"
+
+    # All values should be in [0, 1]
+    assert np.all(chromosome >= 0) and np.all(chromosome <= 1), "Chromosome values out of bounds"
+
+    print("✓ Architecture encoding/decoding test passed!")
+
+
+def test_chromosome_decoding():
+    """Test decoding random chromosome to architecture."""
+    print("Testing chromosome decoding...")
+
+    np.random.seed(42)
+    chromosome = np.random.rand(10 * 7 + 3)
+
+    # Decode
+    arch = decode_chromosome_to_architecture(chromosome, max_layers=10, num_classes=10)
+
+    # Should have at least a flatten and output dense layer
+    assert len(arch.layers) > 0, "Architecture should have layers"
+
+    # Last layer should be dense with 10 units (output layer)
+    assert arch.layers[-1].layer_type == 'dense', "Last layer should be dense"
+    assert arch.layers[-1].params['units'] == 10, "Output layer should have 10 units"
+
+    # Should have flatten layer
+    has_flatten = any(l.layer_type == 'flatten' for l in arch.layers)
+    assert has_flatten, "Architecture should have flatten layer"
+
+    # Learning rate should be in reasonable range
+    assert 1e-4 <= arch.learning_rate <= 1e-2, f"Learning rate out of range: {arch.learning_rate}"
+
+    # Batch size should be power of 2
+    batch_size = arch.batch_size
+    assert batch_size > 0 and (batch_size & (batch_size - 1)) == 0, "Batch size should be power of 2"
+
+    print("✓ Chromosome decoding test passed!")
+
+
+def test_architecture_complexity():
+    """Test architecture complexity calculation."""
+    print("Testing architecture complexity...")
+
+    layers = [
+        LayerGene('conv2d', {'filters': 32, 'kernel_size': 3, 'activation': 'relu'}),
+        LayerGene('conv2d', {'filters': 64, 'kernel_size': 3, 'activation': 'relu'}),
+        LayerGene('dense', {'units': 128, 'activation': 'relu'}),
+        LayerGene('dense', {'units': 10, 'activation': 'softmax'})
+    ]
+
+    arch = ArchitectureChromosome(layers)
+    complexity = arch.count_parameters()
+
+    # Should be positive
+    assert complexity > 0, "Complexity should be positive"
+
+    # Approximate calculation: 32*9 + 64*9 + 128 + 10 = 288 + 576 + 128 + 10 = 1002
+    expected_approx = 32*9 + 64*9 + 128 + 10
+    assert complexity == expected_approx, f"Expected ~{expected_approx}, got {complexity}"
+
+    print("✓ Architecture complexity test passed!")
+
+
 def run_all_tests():
     """Run all tests."""
     print("\n" + "="*70)
@@ -98,8 +229,15 @@ def run_all_tests():
         test_synthetic_data_generation()
         test_portfolio_data_generation()
 
+        # NAS tests
+        test_layer_gene_creation()
+        test_architecture_chromosome()
+        test_architecture_encoding_decoding()
+        test_chromosome_decoding()
+        test_architecture_complexity()
+
         print("\n" + "="*70)
-        print("✓ ALL TESTS PASSED!")
+        print("✓ ALL TESTS PASSED! (10 tests)")
         print("="*70 + "\n")
 
     except AssertionError as e:

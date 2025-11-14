@@ -555,3 +555,428 @@ def baldwin_evolution(population, fitness_values, distance_matrix, local_search_
             adjusted_fitness[i] = -improved_distance  # Fitness = negative distance
 
     return adjusted_fitness
+
+
+# ==================== NSGA-II Complete Implementation ====================
+
+def nsga2_selection(population, objectives, n_select):
+    """
+    NSGA-II selection based on non-domination rank and crowding distance.
+
+    Arguments:
+    population -- current population
+    objectives -- objective values (pop_size, n_objectives)
+    n_select -- number of individuals to select
+
+    Returns:
+    selected_population -- selected individuals
+    selected_objectives -- their objectives
+    """
+    # Fast non-dominated sort
+    fronts = fast_non_dominated_sort(population, objectives)
+
+    # Calculate crowding distance for each front
+    crowding_distances = np.zeros(len(population))
+    for front in fronts:
+        if len(front) > 0:
+            front_objectives = objectives[front]
+            distances = calculate_crowding_distance_multi(front_objectives)
+            crowding_distances[front] = distances
+
+    # Select individuals
+    selected_indices = []
+
+    for front in fronts:
+        if len(selected_indices) + len(front) <= n_select:
+            # Add entire front
+            selected_indices.extend(front)
+        else:
+            # Add part of front based on crowding distance
+            remaining = n_select - len(selected_indices)
+            front_distances = crowding_distances[front]
+            # Sort by crowding distance (descending)
+            sorted_front = [front[i] for i in np.argsort(-front_distances)]
+            selected_indices.extend(sorted_front[:remaining])
+            break
+
+    selected_population = population[selected_indices]
+    selected_objectives = objectives[selected_indices]
+
+    return selected_population, selected_objectives
+
+
+def nsga2(objective_functions, n_objectives, bounds, pop_size=100, max_generations=100,
+          crossover_rate=0.9, mutation_rate=None, eta_c=20, eta_m=20):
+    """
+    NSGA-II: Non-dominated Sorting Genetic Algorithm II.
+
+    Complete implementation for multi-objective optimization.
+
+    Arguments:
+    objective_functions -- list of objective functions to minimize
+    n_objectives -- number of objectives
+    bounds -- list of (min, max) tuples for each variable
+    pop_size -- population size (should be even)
+    max_generations -- maximum generations
+    crossover_rate -- crossover probability
+    mutation_rate -- mutation probability (default: 1/n_vars)
+    eta_c -- distribution index for SBX crossover
+    eta_m -- distribution index for polynomial mutation
+
+    Returns:
+    final_population -- final population
+    final_objectives -- final objective values
+    pareto_front -- indices of Pareto optimal solutions
+    history -- evolution history
+    """
+    n_vars = len(bounds)
+    bounds = np.array(bounds)
+
+    if mutation_rate is None:
+        mutation_rate = 1.0 / n_vars
+
+    # Ensure pop_size is even
+    if pop_size % 2 != 0:
+        pop_size += 1
+
+    # Initialize population
+    population = np.random.uniform(
+        bounds[:, 0], bounds[:, 1], (pop_size, n_vars)
+    )
+
+    # Evaluate objectives
+    objectives = np.array([[f(ind) for f in objective_functions]
+                          for ind in population])
+
+    history = {
+        'hypervolume': [],
+        'n_pareto': [],
+        'spread': []
+    }
+
+    for generation in range(max_generations):
+        # Create offspring through crossover and mutation
+        offspring = []
+
+        for i in range(0, pop_size, 2):
+            # Select parents (binary tournament)
+            parent1_idx = binary_tournament_selection_nsga2(
+                population, objectives, 2
+            )
+            parent2_idx = binary_tournament_selection_nsga2(
+                population, objectives, 2
+            )
+
+            parent1 = population[parent1_idx]
+            parent2 = population[parent2_idx]
+
+            # Crossover (SBX)
+            if np.random.rand() < crossover_rate:
+                child1, child2 = sbx_crossover(parent1, parent2, eta_c, bounds)
+            else:
+                child1, child2 = parent1.copy(), parent2.copy()
+
+            # Mutation (Polynomial)
+            child1 = polynomial_mutation(child1, mutation_rate, eta_m, bounds)
+            child2 = polynomial_mutation(child2, mutation_rate, eta_m, bounds)
+
+            offspring.extend([child1, child2])
+
+        offspring = np.array(offspring)
+
+        # Evaluate offspring
+        offspring_objectives = np.array([[f(ind) for f in objective_functions]
+                                        for ind in offspring])
+
+        # Combine parent and offspring populations
+        combined_population = np.vstack([population, offspring])
+        combined_objectives = np.vstack([objectives, offspring_objectives])
+
+        # Select next generation using NSGA-II selection
+        population, objectives = nsga2_selection(
+            combined_population, combined_objectives, pop_size
+        )
+
+        # Track metrics
+        fronts = fast_non_dominated_sort(population, objectives)
+        history['n_pareto'].append(len(fronts[0]) if len(fronts) > 0 else 0)
+
+        # Spread metric (diversity)
+        if len(fronts) > 0 and len(fronts[0]) > 1:
+            pareto_objectives = objectives[fronts[0]]
+            distances = calculate_crowding_distance_multi(pareto_objectives)
+            history['spread'].append(np.std(distances[np.isfinite(distances)]))
+        else:
+            history['spread'].append(0.0)
+
+    # Get final Pareto front
+    fronts = fast_non_dominated_sort(population, objectives)
+    pareto_front = fronts[0] if len(fronts) > 0 else []
+
+    return population, objectives, pareto_front, history
+
+
+def binary_tournament_selection_nsga2(population, objectives, n_tournaments=1):
+    """
+    Binary tournament selection for NSGA-II.
+
+    Compares based on:
+    1. Non-domination rank
+    2. Crowding distance (if same rank)
+
+    Arguments:
+    population -- current population
+    objectives -- objective values
+    n_tournaments -- number of tournaments
+
+    Returns:
+    selected_index -- index of winner
+    """
+    pop_size = len(population)
+
+    # Get ranks
+    fronts = fast_non_dominated_sort(population, objectives)
+    ranks = np.zeros(pop_size, dtype=int)
+    for rank, front in enumerate(fronts):
+        for idx in front:
+            ranks[idx] = rank
+
+    # Get crowding distances
+    crowding_distances = np.zeros(pop_size)
+    for front in fronts:
+        if len(front) > 1:
+            front_objectives = objectives[front]
+            distances = calculate_crowding_distance_multi(front_objectives)
+            crowding_distances[front] = distances
+
+    # Tournament
+    idx1, idx2 = np.random.choice(pop_size, 2, replace=False)
+
+    # Compare
+    if ranks[idx1] < ranks[idx2]:  # Lower rank is better
+        return idx1
+    elif ranks[idx1] > ranks[idx2]:
+        return idx2
+    else:
+        # Same rank, compare crowding distance
+        if crowding_distances[idx1] > crowding_distances[idx2]:
+            return idx1
+        else:
+            return idx2
+
+
+def sbx_crossover(parent1, parent2, eta, bounds):
+    """
+    Simulated Binary Crossover (SBX) for real-coded GAs.
+
+    Arguments:
+    parent1, parent2 -- parent solutions
+    eta -- distribution index (larger eta -> more similar to parents)
+    bounds -- variable bounds
+
+    Returns:
+    child1, child2 -- offspring
+    """
+    n_vars = len(parent1)
+    child1 = np.zeros(n_vars)
+    child2 = np.zeros(n_vars)
+
+    for i in range(n_vars):
+        if np.random.rand() < 0.5:
+            if np.abs(parent1[i] - parent2[i]) > 1e-6:
+                # Calculate beta
+                y1 = min(parent1[i], parent2[i])
+                y2 = max(parent1[i], parent2[i])
+
+                lower_bound = bounds[i, 0]
+                upper_bound = bounds[i, 1]
+
+                beta_l = 1.0 + 2.0 * (y1 - lower_bound) / (y2 - y1)
+                beta_u = 1.0 + 2.0 * (upper_bound - y2) / (y2 - y1)
+
+                alpha = 2.0 - beta_l ** -(eta + 1.0)
+                rand = np.random.rand()
+
+                if rand <= 1.0 / alpha:
+                    beta_q = (rand * alpha) ** (1.0 / (eta + 1.0))
+                else:
+                    beta_q = (1.0 / (2.0 - rand * alpha)) ** (1.0 / (eta + 1.0))
+
+                child1[i] = 0.5 * ((y1 + y2) - beta_q * (y2 - y1))
+
+                alpha = 2.0 - beta_u ** -(eta + 1.0)
+
+                if rand <= 1.0 / alpha:
+                    beta_q = (rand * alpha) ** (1.0 / (eta + 1.0))
+                else:
+                    beta_q = (1.0 / (2.0 - rand * alpha)) ** (1.0 / (eta + 1.0))
+
+                child2[i] = 0.5 * ((y1 + y2) + beta_q * (y2 - y1))
+
+                # Clamp to bounds
+                child1[i] = np.clip(child1[i], lower_bound, upper_bound)
+                child2[i] = np.clip(child2[i], lower_bound, upper_bound)
+            else:
+                child1[i] = parent1[i]
+                child2[i] = parent2[i]
+        else:
+            child1[i] = parent1[i]
+            child2[i] = parent2[i]
+
+    return child1, child2
+
+
+def polynomial_mutation(individual, mutation_rate, eta, bounds):
+    """
+    Polynomial mutation for real-coded GAs.
+
+    Arguments:
+    individual -- solution to mutate
+    mutation_rate -- probability of mutating each variable
+    eta -- distribution index
+    bounds -- variable bounds
+
+    Returns:
+    mutated -- mutated solution
+    """
+    mutated = individual.copy()
+    n_vars = len(individual)
+
+    for i in range(n_vars):
+        if np.random.rand() < mutation_rate:
+            y = mutated[i]
+            lower_bound = bounds[i, 0]
+            upper_bound = bounds[i, 1]
+
+            delta_1 = (y - lower_bound) / (upper_bound - lower_bound)
+            delta_2 = (upper_bound - y) / (upper_bound - lower_bound)
+
+            rand = np.random.rand()
+
+            if rand < 0.5:
+                delta_q = (2.0 * rand + (1.0 - 2.0 * rand) * (1.0 - delta_1) ** (eta + 1.0)) ** (1.0 / (eta + 1.0)) - 1.0
+            else:
+                delta_q = 1.0 - (2.0 * (1.0 - rand) + 2.0 * (rand - 0.5) * (1.0 - delta_2) ** (eta + 1.0)) ** (1.0 / (eta + 1.0))
+
+            mutated[i] = y + delta_q * (upper_bound - lower_bound)
+            mutated[i] = np.clip(mutated[i], lower_bound, upper_bound)
+
+    return mutated
+
+
+# ==================== ZDT Test Problems ====================
+
+def zdt1(x):
+    """
+    ZDT1 test problem.
+
+    Convex Pareto front.
+    n_vars = 30
+
+    Returns:
+    (f1, f2) -- tuple of two objectives
+    """
+    n = len(x)
+    f1 = x[0]
+    g = 1.0 + 9.0 * np.sum(x[1:]) / (n - 1)
+    h = 1.0 - np.sqrt(f1 / g)
+    f2 = g * h
+    return f1, f2
+
+
+def zdt2(x):
+    """
+    ZDT2 test problem.
+
+    Non-convex Pareto front.
+    n_vars = 30
+
+    Returns:
+    (f1, f2) -- tuple of two objectives
+    """
+    n = len(x)
+    f1 = x[0]
+    g = 1.0 + 9.0 * np.sum(x[1:]) / (n - 1)
+    h = 1.0 - (f1 / g) ** 2
+    f2 = g * h
+    return f1, f2
+
+
+def zdt3(x):
+    """
+    ZDT3 test problem.
+
+    Disconnected Pareto front.
+    n_vars = 30
+
+    Returns:
+    (f1, f2) -- tuple of two objectives
+    """
+    n = len(x)
+    f1 = x[0]
+    g = 1.0 + 9.0 * np.sum(x[1:]) / (n - 1)
+    h = 1.0 - np.sqrt(f1 / g) - (f1 / g) * np.sin(10 * np.pi * f1)
+    f2 = g * h
+    return f1, f2
+
+
+def zdt4(x):
+    """
+    ZDT4 test problem.
+
+    Many local Pareto fronts.
+    n_vars = 10
+    x[0] in [0,1], x[1:] in [-5,5]
+
+    Returns:
+    (f1, f2) -- tuple of two objectives
+    """
+    n = len(x)
+    f1 = x[0]
+    g = 1.0 + 10.0 * (n - 1) + np.sum(x[1:]**2 - 10.0 * np.cos(4.0 * np.pi * x[1:]))
+    h = 1.0 - np.sqrt(f1 / g)
+    f2 = g * h
+    return f1, f2
+
+
+def zdt6(x):
+    """
+    ZDT6 test problem.
+
+    Non-uniform search space, low density near Pareto front.
+    n_vars = 10
+
+    Returns:
+    (f1, f2) -- tuple of two objectives
+    """
+    n = len(x)
+    f1 = 1.0 - np.exp(-4.0 * x[0]) * (np.sin(6.0 * np.pi * x[0])) ** 6
+    g = 1.0 + 9.0 * (np.sum(x[1:]) / (n - 1)) ** 0.25
+    h = 1.0 - (f1 / g) ** 2
+    f2 = g * h
+    return f1, f2
+
+
+def get_zdt_problem(problem_name):
+    """
+    Get ZDT problem configuration.
+
+    Arguments:
+    problem_name -- 'ZDT1', 'ZDT2', 'ZDT3', 'ZDT4', 'ZDT6'
+
+    Returns:
+    objective_functions, bounds, n_vars
+    """
+    if problem_name.upper() == 'ZDT1':
+        return [lambda x: zdt1(x)[0], lambda x: zdt1(x)[1]], [(0.0, 1.0)] * 30, 30
+    elif problem_name.upper() == 'ZDT2':
+        return [lambda x: zdt2(x)[0], lambda x: zdt2(x)[1]], [(0.0, 1.0)] * 30, 30
+    elif problem_name.upper() == 'ZDT3':
+        return [lambda x: zdt3(x)[0], lambda x: zdt3(x)[1]], [(0.0, 1.0)] * 30, 30
+    elif problem_name.upper() == 'ZDT4':
+        bounds = [(0.0, 1.0)] + [(-5.0, 5.0)] * 9
+        return [lambda x: zdt4(x)[0], lambda x: zdt4(x)[1]], bounds, 10
+    elif problem_name.upper() == 'ZDT6':
+        return [lambda x: zdt6(x)[0], lambda x: zdt6(x)[1]], [(0.0, 1.0)] * 10, 10
+    else:
+        raise ValueError(f"Unknown ZDT problem: {problem_name}")
