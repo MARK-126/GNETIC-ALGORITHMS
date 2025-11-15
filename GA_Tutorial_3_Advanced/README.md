@@ -19,10 +19,24 @@ This tutorial covers advanced GA applications including combinatorial optimizati
 | File | Description |
 |------|-------------|
 | `GA_Advanced_Topics.ipynb` | Main tutorial with TSP, hybrid GAs, multi-objective basics |
+| `C3W1_Assignment_NSGA2.ipynb` | **NEW:** Interactive Coursera-style assignment for multi-objective optimization |
 | `ga_utils_advanced.py` | TSP operators, 2-opt search, NSGA-II complete implementation, ZDT problems |
 | `parallel_ga.py` | **NEW:** Parallel GA with island model and multiprocessing |
 | `public_tests.py` | 17 automated tests (TSP, NSGA-II, Parallel GA) |
 | `README.md` | This documentation |
+
+### 🎓 Interactive Assignment (Coursera-style)
+
+**New!** `C3W1_Assignment_NSGA2.ipynb` provides hands-on experience with multi-objective optimization:
+
+- **Pareto dominance exercise** - Implement dominance checking from scratch
+- **ZDT benchmark problems** - Work with standard multi-objective test functions (ZDT1, ZDT2, ZDT3)
+- **NSGA-II algorithm** - Run production-ready multi-objective optimization
+- **Pareto front visualization** - Compare GA solutions with true optimal fronts
+- **Convergence analysis** - Track algorithm performance over generations
+- **Challenge exercise** - Solve disconnected Pareto front problem (ZDT3)
+
+**Perfect for learning multi-objective optimization interactively!**
 
 ### Topics Covered
 

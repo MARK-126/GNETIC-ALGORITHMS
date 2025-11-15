@@ -20,11 +20,25 @@ This tutorial provides a comprehensive introduction to **Genetic Algorithms (GAs
 | File | Description |
 |------|-------------|
 | `GA_Introduction.ipynb` | Main tutorial notebook with theory, exercises, and examples |
+| `C1W1_Assignment_GA_Basics.ipynb` | **NEW:** Interactive Coursera-style assignment with guided exercises |
 | `ga_utils_basics.py` | Core utility functions for implementing GAs |
 | `public_tests.py` | Automated tests to validate your implementations |
 | `testCases.py` | Test case generators for validation |
 | `datasets/` | Directory for benchmark problem data |
 | `images/` | Visualizations and diagrams |
+
+### 🎓 Interactive Assignment (Coursera-style)
+
+**New!** `C1W1_Assignment_GA_Basics.ipynb` provides a hands-on, guided learning experience:
+
+- **8 step-by-step exercises** with `START CODE HERE / END CODE HERE` markers
+- Expected outputs shown for each section
+- Covers all core concepts: initialization, fitness, selection, crossover, mutation
+- Includes built-in tests to verify your solutions
+- Professional visualizations using `ga_toolkit`
+- Perfect for self-paced learning and assessment
+
+**Start here if you prefer interactive, exercise-based learning!**
 
 ### Topics Covered
 

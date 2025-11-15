@@ -30,6 +30,7 @@ This tutorial presents a **complete real-world industrial case study** solving t
 
 | File | Description |
 |------|-------------|
+| `C5W1_Assignment_Vehicle_Routing.ipynb` | **NEW:** Interactive Coursera-style assignment for VRPTW |
 | `delivery_problem.py` | Core problem modeling (Customer, Depot, Vehicle, Problem) |
 | `delivery_ga.py` | Specialized GA with route-aware operators |
 | `baselines.py` | Classical heuristics (Nearest Neighbor, Clarke-Wright, Sweep) |
@@ -37,6 +38,20 @@ This tutorial presents a **complete real-world industrial case study** solving t
 | `public_tests.py` | 12 automated tests |
 | `data/` | Benchmark problem instances |
 | `README.md` | This documentation |
+
+### 🎓 Interactive Assignment (Coursera-style)
+
+**New!** `C5W1_Assignment_Vehicle_Routing.ipynb` provides a complete hands-on industrial case study:
+
+- **Real-world problem modeling** - Create VRPTW instances with realistic constraints
+- **Route evaluation exercise** - Implement distance calculation for delivery routes
+- **Specialized GA operators** - Use domain-specific crossover and mutation
+- **Algorithm comparison** - Compare GA with Nearest Neighbor, Clarke-Wright, Sweep
+- **Geographic visualization** - Plot delivery routes on maps
+- **Business impact calculation** - Quantify cost savings from optimization
+- **Challenge: 50-customer problem** - Scale up to production-size instances
+
+**Learn how Amazon and Uber Eats optimize their deliveries!**
 
 ### Problem Components
 
