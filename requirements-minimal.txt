@@ -1,0 +1,11 @@
+# Minimal Dependencies (Core functionality only)
+# Install with: pip install -r requirements-minimal.txt
+
+numpy>=1.21.0,<2.0.0
+matplotlib>=3.4.0,<4.0.0
+
+# This is sufficient for:
+# - Tutorial 1: Basics
+# - Tutorial 2: Intermediate
+# - Tutorial 3: Advanced (TSP, NSGA-II, Parallel GA)
+# - Tutorial 5: Industrial Case Study (VRPTW)

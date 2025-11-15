@@ -1,0 +1,41 @@
+# Core Dependencies
+numpy>=1.21.0,<2.0.0
+scipy>=1.7.0,<2.0.0
+matplotlib>=3.4.0,<4.0.0
+
+# Optional: Machine Learning (for Tutorials 4 and NAS)
+scikit-learn>=1.0.0,<2.0.0  # For ML applications
+
+# Optional: Deep Learning (for NAS - Neural Architecture Search)
+# Uncomment if using NAS features:
+# tensorflow>=2.8.0,<3.0.0
+# keras>=2.8.0,<3.0.0
+
+# Optional: Visualization
+plotly>=5.0.0,<6.0.0  # Interactive plots
+seaborn>=0.11.0,<1.0.0  # Statistical visualizations
+
+# Optional: Jupyter
+jupyter>=1.0.0
+notebook>=6.4.0
+ipywidgets>=7.6.0  # For interactive widgets
+
+# Optional: Progress bars
+tqdm>=4.62.0,<5.0.0
+
+# Optional: Web dashboard (if using Streamlit features)
+# streamlit>=1.10.0
+
+# Development Dependencies (for contributors)
+pytest>=7.0.0  # For running tests
+black>=22.0.0  # Code formatting
+flake8>=4.0.0  # Linting
+
+# Note: Install minimal dependencies with:
+#   pip install numpy scipy matplotlib
+#
+# Install all dependencies with:
+#   pip install -r requirements.txt
+#
+# For NAS (Neural Architecture Search), additionally install:
+#   pip install tensorflow keras

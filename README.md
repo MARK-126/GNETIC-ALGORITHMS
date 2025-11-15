@@ -6,6 +6,24 @@ Este repositorio contiene una serie completa y profesional de tutoriales sobre *
 
 ---
 
+## 🚀 Quick Start (5 minutos)
+
+**¿Nuevo en GAs? ¡Empieza aquí!**
+
+```bash
+# 1. Instalar dependencias mínimas
+pip install -r requirements-minimal.txt
+
+# 2. Ejecutar ejemplo
+python examples/quickstart_example.py
+
+# 3. Ver resultados con visualizaciones
+```
+
+**📖 Guía completa:** Ver [QUICKSTART.md](QUICKSTART.md) para tutorial de 5 minutos con ejemplos copy-paste.
+
+---
+
 ## 📚 Estructura del Repositorio
 
 ### 🎓 Tutoriales Disponibles
@@ -38,6 +56,9 @@ Este repositorio contiene una serie completa y profesional de tutoriales sobre *
 
 | Componente | Descripción | Estado |
 |-----------|-------------|--------|
+| **ga_toolkit** | **NUEVO:** Módulo de visualización compartido | ✅ Completo |
+| **Visualization Tools** | **NUEVO:** Funciones para graficar convergencia, Pareto fronts, TSP tours | ✅ Completo |
+| **Quick Start Examples** | **NUEVO:** Ejemplos ejecutables en 5 minutos | ✅ Completo |
 | **Interactive Dashboard** | Visualización en tiempo real con Plotly Dash | ✅ Completo |
 | **sklearn Integration** | Integración con scikit-learn (GAClassifier, GAFeatureSelector) | ✅ Completo |
 | **Benchmarking Suite** | Suite automatizada de benchmarking | ✅ Completo |
