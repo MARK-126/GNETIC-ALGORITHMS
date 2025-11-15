@@ -17,10 +17,28 @@ This tutorial demonstrates how to apply genetic algorithms to practical real-wor
 | File | Description |
 |------|-------------|
 | `GA_Real_World_Applications.ipynb` | Complete tutorial with 4 practical applications |
+| `C4W1_Assignment_Applications.ipynb` | **NEW:** Interactive Coursera-style assignment with practical exercises |
 | `ga_utils_applications.py` | Application-specific utilities and helpers |
 | `neural_architecture_search.py` | **NEW:** Complete NAS framework with TensorFlow/Keras integration |
 | `public_tests.py` | 10 validation tests (including NAS tests) |
 | `README.md` | This documentation |
+
+### 🎓 Interactive Assignment (Coursera-style)
+
+**New!** `C4W1_Assignment_Applications.ipynb` provides hands-on practice with real-world applications:
+
+- **4 fill-in-the-blank exercises** with `START CODE HERE / END CODE HERE` markers
+  1. Decode hyperparameters from chromosome
+  2. Evaluate feature subset (fitness function)
+  3. Evaluate job schedule (calculate makespan)
+  4. Evaluate portfolio (return vs risk trade-off)
+- **Complete feature selection example** with real dataset
+- **Built-in tests** and expected outputs
+- **Visualization** of results and convergence
+- **Challenge exercise**: Solve job scheduling problem
+- **Real business impact** calculations
+
+**Apply GAs to practical industry problems!**
 
 ## 🚀 Quick Start
 

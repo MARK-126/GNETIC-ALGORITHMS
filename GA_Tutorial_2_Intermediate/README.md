@@ -21,10 +21,30 @@ This tutorial covers **advanced techniques** in genetic algorithms, building upo
 | File | Description |
 |------|-------------|
 | `GA_Advanced_Operators.ipynb` | Main tutorial notebook with 11 sections |
+| `C2W1_Assignment_Advanced_Operators.ipynb` | **NEW:** Interactive Coursera-style assignment with hands-on exercises |
 | `ga_utils_intermediate.py` | Advanced GA operator implementations |
 | `public_tests.py` | 17 automated tests for validation |
 | `testCases.py` | Test data generators |
 | `README.md` | This documentation |
+
+### 🎓 Interactive Assignment (Coursera-style)
+
+**New!** `C2W1_Assignment_Advanced_Operators.ipynb` provides hands-on practice with advanced operators:
+
+- **7 fill-in-the-blank exercises** with `START CODE HERE / END CODE HERE` markers
+  1. Rank-based selection
+  2. Stochastic Universal Sampling (SUS)
+  3. Arithmetic crossover
+  4. BLX-α (Blend) crossover
+  5. Polynomial mutation
+  6. Adaptive mutation
+  7. Elitist replacement
+- **Built-in tests** for each exercise
+- **Complete advanced GA** combining all operators
+- **Performance comparison** on Rastrigin function
+- **Challenge exercise** to explore operator combinations
+
+**Perfect for mastering state-of-the-art GA techniques!**
 
 ### Topics Covered
 
