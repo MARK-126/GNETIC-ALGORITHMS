@@ -43,9 +43,13 @@ This tutorial presents a **complete real-world industrial case study** solving t
 
 **New!** `C5W1_Assignment_Vehicle_Routing.ipynb` provides a complete hands-on industrial case study:
 
+- **4 fill-in-the-blank exercises** with `START CODE HERE / END CODE HERE` markers
+  1. **Calculate route distance** - Implement distance calculation for delivery routes
+  2. **Check time window feasibility** - Verify routes respect customer time windows
+  3. **Check capacity feasibility** - Verify routes respect vehicle capacity limits
+  4. **Evaluate route quality** - Combine distance and constraint violations into fitness
 - **Real-world problem modeling** - Create VRPTW instances with realistic constraints
-- **Route evaluation exercise** - Implement distance calculation for delivery routes
-- **Specialized GA operators** - Use domain-specific crossover and mutation
+- **Complete GA optimization** - Run specialized GA with domain-specific operators
 - **Algorithm comparison** - Compare GA with Nearest Neighbor, Clarke-Wright, Sweep
 - **Geographic visualization** - Plot delivery routes on maps
 - **Business impact calculation** - Quantify cost savings from optimization

@@ -29,14 +29,17 @@ This tutorial covers advanced GA applications including combinatorial optimizati
 
 **New!** `C3W1_Assignment_NSGA2.ipynb` provides hands-on experience with multi-objective optimization:
 
-- **Pareto dominance exercise** - Implement dominance checking from scratch
-- **ZDT benchmark problems** - Work with standard multi-objective test functions (ZDT1, ZDT2, ZDT3)
-- **NSGA-II algorithm** - Run production-ready multi-objective optimization
+- **4 fill-in-the-blank exercises** with `START CODE HERE / END CODE HERE` markers
+  1. **Pareto dominance** - Implement dominance checking from scratch
+  2. **Non-dominated sorting** - Find Pareto front (Front 1)
+  3. **Crowding distance** - Calculate diversity metric for solutions
+  4. **NSGA-II tournament selection** - Implement rank and distance-based selection
+- **Complete NSGA-II runs** on ZDT benchmark problems (ZDT1, ZDT2, ZDT3)
 - **Pareto front visualization** - Compare GA solutions with true optimal fronts
 - **Convergence analysis** - Track algorithm performance over generations
 - **Challenge exercise** - Solve disconnected Pareto front problem (ZDT3)
 
-**Perfect for learning multi-objective optimization interactively!**
+**Perfect for mastering NSGA-II internals and multi-objective optimization!**
 
 ### Topics Covered
 
